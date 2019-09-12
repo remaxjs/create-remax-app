@@ -1,0 +1,28 @@
+{
+  "name": "create-remax-app",
+  "version": "1.1.0",
+  "description": "Create Remax apps with no build configuration.",
+  "bin": {
+    "create-remax-app": "./bin/index.js"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remaxjs/create-remax-app.git"
+  },
+  "keywords": [
+    "Remax",
+    "React",
+    "CLI"
+  ],
+  "author": "QC-L",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/remaxjs/create-remax-app/issues"
+  },
+  "homepage": "https://github.com/remaxjs/create-remax-app#readme",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^3.0.1"
+  }
+}
