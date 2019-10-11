@@ -1,6 +1,6 @@
 {
   "name": "create-remax-app",
-  "version": "1.1.0",
+  "version": "1.1.4",
   "description": "Create Remax apps with no build configuration.",
   "bin": {
     "create-remax-app": "./bin/create-remax-app"
@@ -23,6 +23,10 @@
   "bugs": {
     "url": "https://github.com/remaxjs/create-remax-app/issues"
   },
+  "files": [
+    "lib/**/*",
+    "bin/**/*"
+  ],
   "homepage": "https://github.com/remaxjs/create-remax-app#readme",
   "dependencies": {
     "@types/async": "^3.0.2",

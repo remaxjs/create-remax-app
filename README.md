@@ -4,7 +4,7 @@
 
 ```sh
 npx create-remax-app first-remax-app
-cd first-remax-app
+cd first-remax-app && npm i
 npm run dev
 ```
 
