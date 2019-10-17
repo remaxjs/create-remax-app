@@ -10,36 +10,50 @@ import axios from 'axios';
 import user from './git-user'
 import ask from './ask';
 
-export default async (argv: any) => {
+export default async (argv: any = {}) => {
   const spinner = ora('downloading template...').start();
-  const emitter = degit('QC-L/remax-template', {
+  const remaxUrl = `https://api.github.com/repos/remaxjs/remax/releases/latest`
+  const { projectDirectory } = argv;
+  const destPath = path.join(process.cwd(), projectDirectory)
+  let tmp = path.join(__dirname, '../..', 'tmp')
+  let templateRepo = 'QC-L/remax-template'
+  let typescript = ''
+  let description = 'Remax Project'
+  // 判断是否是 ts
+  if (argv.t) {
+    templateRepo = 'QC-L/remax-template-typescript'
+    typescript = 'TypeScript'
+    description = `${description} With ${typescript}`
+    tmp = path.join(tmp, 'ts')
+  } else {
+    tmp = path.join(tmp, 'js')
+  }
+  const template = path.join(tmp, 'template')
+  // 初始化下载
+  const emitter = degit(templateRepo, {
     cache: false,
     force: true,
     verbose: true,
   });
-
-  let json = await axios.get('https://api.github.com/repos/remaxjs/remax/releases/latest');
-  let { tag_name } = json.data;
-
-  const destPath = path.join(process.cwd(), argv.projectName)
-  const tmp = path.join(__dirname, '../..', 'tmp')
-  const template = path.join(tmp, 'template')
-
+  // 获取 remax 版本
+  let json = await axios.get(remaxUrl);
+  let { tag_name } = json && json.data;
+  // 下载并进行数据处理
   emitter.clone(tmp).then(() => {
     spinner.stop();
     Metalsmith(process.cwd())
       .metadata({
-        name: argv.projectName,
-        description: 'remax project',
-        remaxVersion: `^${tag_name.replace(/^./, '')}`
+        name: projectDirectory,
+        description: description,
+        remaxVersion: `^${tag_name.replace(/^./, '')}`,
       })
       .source(template)
       .destination(destPath)
       .clean(false)
       .use(askQuestions({
-        name: { default: argv.projectName, type: 'string' },
+        name: { default: projectDirectory, type: 'string' },
         author: { default: user(), type: 'string' },
-        description: { default: 'remax project', type: 'string' },
+        description: { default: description, type: 'string' },
         platform: {
           default: 'wechat',
           type: 'list',
@@ -50,6 +64,7 @@ export default async (argv: any) => {
           ]
         }
       }))
+      .use(filterPlatform())
       .use(renderTemplateFiles())
       .build(function (err: Error) {
         if (!err) {
@@ -57,6 +72,20 @@ export default async (argv: any) => {
         }
       })
   });
+}
+
+const filterPlatform = () => {
+  return (files: any, metalsmith: any, done: any) => {
+    const { platform } = metalsmith._metadata;
+    metalsmith._metadata.platformTitle = firstUpperCase(platform)
+    done()
+  }
+}
+
+const firstUpperCase = (str: string) => {
+  return str.toLowerCase().replace(/^./, (s: string) => {
+    return s.toUpperCase()
+  })
 }
 
 const askQuestions = (prompts: any) => {
