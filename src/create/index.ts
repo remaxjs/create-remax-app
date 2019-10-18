@@ -5,30 +5,22 @@ import Metalsmith from 'metalsmith';
 import chalk from 'chalk';
 import consolidate from 'consolidate';
 import async from 'async';
-import axios from 'axios';
 
+import { checkRepoVersion } from './check-version'
+import macros from '../utils/macros';
 import user from './git-user'
 import ask from './ask';
 
 export default async (argv: any = {}) => {
-  const spinner = ora('downloading template...').start();
-  const remaxUrl = `https://api.github.com/repos/remaxjs/remax/releases/latest`
-  const { projectDirectory } = argv;
-  const destPath = path.join(process.cwd(), projectDirectory)
-  let tmp = path.join(__dirname, '../..', 'tmp')
-  let templateRepo = 'QC-L/remax-template'
-  let typescript = ''
-  let description = 'Remax Project'
-  // 判断是否是 ts
-  if (argv.t) {
-    templateRepo = 'QC-L/remax-template-typescript'
-    typescript = 'TypeScript'
-    description = `${description} With ${typescript}`
-    tmp = path.join(tmp, 'ts')
-  } else {
-    tmp = path.join(tmp, 'js')
-  }
-  const template = path.join(tmp, 'template')
+  const spinner = ora(macros.download).start();
+  const {
+    templatePath,
+    tmpPath,
+    destPath,
+    templateRepo,
+    description,
+    projectDirectory
+  } = pathAndRepoUrlGenerator(argv)
   // 初始化下载
   const emitter = degit(templateRepo, {
     cache: false,
@@ -36,18 +28,17 @@ export default async (argv: any = {}) => {
     verbose: true,
   });
   // 获取 remax 版本
-  let json = await axios.get(remaxUrl);
-  let { tag_name } = json && json.data;
+  const remaxTagName = await checkRepoVersion(macros.remaxRepo);
   // 下载并进行数据处理
-  emitter.clone(tmp).then(() => {
+  emitter.clone(tmpPath).then(() => {
     spinner.stop();
     Metalsmith(process.cwd())
       .metadata({
         name: projectDirectory,
         description: description,
-        remaxVersion: `^${tag_name.replace(/^./, '')}`,
+        remaxVersion: `^${remaxTagName.replace(/^./, '')}`,
       })
-      .source(template)
+      .source(templatePath)
       .destination(destPath)
       .clean(false)
       .use(askQuestions({
@@ -72,6 +63,31 @@ export default async (argv: any = {}) => {
         }
       })
   });
+}
+
+const pathAndRepoUrlGenerator = (argv: any) => {
+  const { projectDirectory } = argv;
+  const destPath = path.join(process.cwd(), projectDirectory)
+  let tmpPath = path.join(__dirname, '../..', macros.tmpPathName)
+  let templateRepo = macros.templateRepo
+  let description = macros.description
+  // 判断是否是 ts
+  if (argv.t) {
+    templateRepo = macros.templateTSRepo
+    description = macros.descriptionTS
+    tmpPath = path.join(tmpPath, 'ts')
+  } else {
+    tmpPath = path.join(tmpPath, 'js')
+  }
+  const templatePath = path.join(tmpPath, macros.templatePathName)
+  return {
+    templatePath,
+    tmpPath,
+    destPath,
+    templateRepo,
+    description,
+    projectDirectory
+  }
 }
 
 const filterPlatform = () => {
