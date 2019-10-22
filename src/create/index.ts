@@ -6,12 +6,22 @@ import chalk from 'chalk';
 import consolidate from 'consolidate';
 import async from 'async';
 
-import { checkRepoVersion } from './check-version'
-import macros from '../utils/macros';
-import user from './git-user'
-import ask from './ask';
+import { checkRepoVersion } from './check-version';
+import { MacrosType } from '../utils/macros';
+import { Arguments } from 'yargs';
+import user from './git-user';
+import ask, { CustomQuestionObjectType } from './ask';
 
-export default async (argv: any = {}) => {
+interface GeneratorValues {
+  [key: string]: string
+}
+
+export interface ArgvType extends Arguments {
+  t: boolean,
+  projectDirectory: string,
+}
+
+export default async (argv: ArgvType, macros: MacrosType) => {
   const spinner = ora(macros.download).start();
   const {
     templatePath,
@@ -20,7 +30,7 @@ export default async (argv: any = {}) => {
     templateRepo,
     description,
     projectDirectory
-  } = pathAndRepoUrlGenerator(argv)
+  } = pathAndRepoUrlGenerator(argv, macros)
   // 初始化下载
   const emitter = degit(templateRepo, {
     cache: false,
@@ -65,14 +75,14 @@ export default async (argv: any = {}) => {
   });
 }
 
-const pathAndRepoUrlGenerator = (argv: any) => {
-  const { projectDirectory } = argv;
+const pathAndRepoUrlGenerator = (argv: ArgvType, macros: MacrosType): GeneratorValues => {
+  const { projectDirectory, t } = argv;
   const destPath = path.join(process.cwd(), projectDirectory)
   let tmpPath = path.join(__dirname, '../..', macros.tmpPathName)
   let templateRepo = macros.templateRepo
   let description = macros.description
   // 判断是否是 ts
-  if (argv.t) {
+  if (t) {
     templateRepo = macros.templateTSRepo
     description = macros.descriptionTS
     tmpPath = path.join(tmpPath, 'ts')
@@ -91,7 +101,7 @@ const pathAndRepoUrlGenerator = (argv: any) => {
 }
 
 const filterPlatform = () => {
-  return (files: any, metalsmith: any, done: any) => {
+  return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
     metalsmith._metadata.platformTitle = firstUpperCase(platform)
     done()
@@ -99,19 +109,19 @@ const filterPlatform = () => {
 }
 
 const firstUpperCase = (str: string) => {
-  return str.toLowerCase().replace(/^./, (s: string) => {
+  return str.toLowerCase().replace(/^./, (s: string): string => {
     return s.toUpperCase()
   })
 }
 
-const askQuestions = (prompts: any) => {
-  return (files: any, metalsmith: any, done: any) => {
+const askQuestions = (prompts: CustomQuestionObjectType) => {
+  return (_: any, metalsmith: any, done: () => void): void => {
     ask(prompts, metalsmith.metadata(), done)
   }
 }
 
 const renderTemplateFiles = () => {
-  return (files: any, metalsmith: any, done: any) => {
+  return (files: any, metalsmith: any, done: () => void): void => {
     const keys = Object.keys(files)
     const metalsmithMetadata = metalsmith.metadata()
     async.each(keys, (file, next) => {

@@ -9,7 +9,7 @@ const getResult = (url: string) => {
   return axios.get(url).then(data => {
     return data.data
   }).catch(e => {
-    console.error(e)
+    // console.error(e)
   })
 }
 
