@@ -1,19 +1,29 @@
 import async from 'async';
-import inquirer from 'inquirer';
+import inquirer, { Question, Answers } from 'inquirer';
 import evaluate from './eval';
 
-const promptMapping = {
+const promptMapping: ObjectValueType = {
   string: 'input',
   boolean: 'confirm'
-} as any
+}
 
-export default function ask (prompts: any, data: any, done: any) {
-  async.eachSeries(Object.keys(prompts), (key, next) => {
-    prompt(data, key, prompts[key], next)
+export interface CustomQuestionType extends Question {
+  label?: string,
+  choices?: string[],
+  type: string,
+}
+
+export interface CustomQuestionObjectType {
+  [key: string]: CustomQuestionType
+}
+
+export default function ask (prompts: CustomQuestionObjectType, data: ObjectValueType, done: () => void) {
+  async.eachSeries(Object.keys(prompts), (key: any, next: () => void) => {
+    promptFunction(data, key, prompts[key], next)
   }, done)
 }
 
-function prompt(data: any, key: any, prompt: any, done: any) {
+function promptFunction(data: ObjectValueType, key: any, prompt: CustomQuestionType, done: () => void) {
   if (prompt.when && !evaluate(prompt.when, data)) {
     return done()
   }
@@ -25,20 +35,15 @@ function prompt(data: any, key: any, prompt: any, done: any) {
     }
   }
 
-  inquirer.prompt([{
+  inquirer.prompt<Answers>([{
     type: promptMapping[prompt.type] || prompt.type,
     name: key,
     message: prompt.message || prompt.label || key,
     default: promptDefault,
     choices: prompt.choices || [],
     validate: prompt.validate || (() => true)
-  }]).then((answers: any) => {
-    if (Array.isArray(answers[key])) {
-      data[key] = {}
-      answers[key].forEach((multiChoiceAnswer: any) => {
-        data[key][multiChoiceAnswer] = true
-      })
-    } else if (typeof answers[key] === 'string') {
+  }]).then((answers: Answers) => {
+    if (typeof answers[key] === 'string') {
       data[key] = answers[key].replace(/"/g, '\\"')
     } else {
       data[key] = answers[key]

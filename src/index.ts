@@ -1,23 +1,23 @@
-import cli from 'yargs';
+import cli, { Arguments, Argv } from 'yargs';
 import chalk from 'chalk';
-import create from './create';
+import create, { ArgvType } from './create';
+import macros from './utils/macros';
 
-export function run(args: any) {
-  const scriptName = 'create-remax-app'
-  const placeholder = 'project-directory'
+export function run(args: string[]) {
+  const { scriptName, placeholder } = macros;
   cli
-    .scriptName(scriptName)
+    .scriptName(macros.scriptName)
     .usage<any>(
-      `$0 <${placeholder}> [options]`, 
+      `$0 <${macros.placeholder}> [options]`, 
       "创建 remax 项目", 
       (yargs) => {
-        yargs.positional(placeholder, {
+        return yargs.positional(macros.placeholder, {
           describe: '项目目录',
           type: 'string'
         })
       }, 
-      (argv) => {
-        create(argv)
+      (argv: ArgvType) => {
+        create(argv, macros)
       }
     )
     .option('h', {
@@ -43,6 +43,5 @@ export function run(args: any) {
       console.error('Run', chalk.blue(`${scriptName} --help`), 'to see all options.')
       process.exit(1)
     })
-    .showHelpOnFail(true)
     .parse(args);
 }
