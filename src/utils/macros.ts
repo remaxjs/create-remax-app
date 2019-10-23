@@ -12,18 +12,4 @@ const macros = {
   defaultPlatform: 'wechat'
 }
 
-export interface MacrosType {
-  scriptName: string,
-  placeholder: string,
-  download: string,
-  remaxRepo: string,
-  templateRepo: string,
-  templateTSRepo: string,
-  description: string,
-  descriptionTS: string,
-  tmpPathName: string,
-  templatePathName: string,
-  defaultPlatform: string
-}
-
 export default macros;
