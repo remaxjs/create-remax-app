@@ -1,6 +1,8 @@
 import axios from 'axios';
 import semver from 'semver';
 import chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
 
 import packageConfig from '../../package.json'
 
@@ -13,6 +15,19 @@ const getResult = (url: string) => {
   return axios.get(url).then(data => {
     return data.data
   })
+}
+
+const checkCurrentTemplateVersion = async (macros: MacrosType, isTypeScript: boolean, tmpPath: string) => {
+  let repoName = isTypeScript ? macros.templateRepo : macros.templateTSRepo
+  const pkgPath = path.join(tmpPath, 'package.json')
+  
+  if (fs.existsSync(pkgPath)) {
+    const tmpPackageConfig = require(pkgPath)
+    const latestVersion = await checkRepoVersion(repoName)
+    return semver.lt(tmpPackageConfig.version, latestVersion)
+  } else {
+    return true
+  }
 }
 
 const checkCurrentRepoVersion = async (repoName: string) => {
@@ -54,4 +69,4 @@ const generatorPlace = (origin: string, replace: string, longLength: number): st
   return originArray.join('')
 }
 
-export { checkRepoVersion, checkCurrentRepoVersion }
+export { checkRepoVersion, checkCurrentRepoVersion, checkCurrentTemplateVersion }
