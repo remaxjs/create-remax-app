@@ -1,4 +1,4 @@
-import cli, { Arguments, Argv } from 'yargs';
+import cli from 'yargs';
 import chalk from 'chalk';
 import create, { ArgvType } from './create';
 import macros from './utils/macros';
