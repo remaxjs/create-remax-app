@@ -109,6 +109,7 @@ export {
   getResult,
   getLocalVersion,
   getLastVersion,
+  generatorSymbol,
   generatorPrompt,
   checkRepoVersion,
   checkCurrentRepoVersion,
