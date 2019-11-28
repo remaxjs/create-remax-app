@@ -1,21 +1,3 @@
 #! /usr/bin/env node
 
-// const commander = require('commander');
-// const chalk = require('chalk');
-// const packageJSON = require('./package.json');
-// const program = new commander.Command();
-
-// let projectName;
-
-// program
-//   .name(packageJSON.name)
-//   .version(packageJSON.version)
-//   .arguments('<project-directory>')
-//   .usage(`${chalk.green('<project-directory>')} [options]`)
-//   .action(name => {
-//     projectName = name;
-//   })
-//   // .command('[project_name]', 'create miniapp project with remax')
-//   .parse(process.argv);
-
 require('../lib/index.js').run(process.argv.slice(2, process.argv.length));
