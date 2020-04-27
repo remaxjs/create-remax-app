@@ -47,6 +47,7 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   }))
   .use(filterPlatform(macros))
   .use(renderTemplateFiles())
+  .use(removeFile())
   .build((err: Error) => {
     if (!err) {
       console.log(chalk.green('create project success!'))
@@ -61,6 +62,32 @@ const filterPlatform = (macros: MacrosType) => {
     macros.choices.forEach(item => {
       metalsmith._metadata[item] = item === platform ? true : false
     })
+    done()
+  }
+}
+
+const removeFile = () => {
+  return (files: any, metalsmith: any, done: () => void): void => {
+    const { platform } = metalsmith._metadata;
+    if (platform === 'wechat') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'mini.project.json') {
+          delete files[file]
+        }
+      })
+    } else if (platform === 'toutiao') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'mini.project.json' || file === 'project.config.json') {
+          delete files[file]
+        }
+      })
+    } else if (platform === 'ali') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'project.config.json') {
+          delete files[file]
+        }
+      })
+    }
     done()
   }
 }
