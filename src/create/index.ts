@@ -6,22 +6,12 @@ import render, { ArgvType, pathAndRepoUrlGenerator } from './render';
 
 export { ArgvType }
 export default async (argv: ArgvType, macros: MacrosType) => {
-  await checkCurrentRepoVersion(macros.scriptName)
+  try {
+    await checkCurrentRepoVersion(macros.scriptName)
+  } catch(e) {}
   const generatorValues = pathAndRepoUrlGenerator(argv, macros);
-  const {
-    tmpPath,
-    templateRepo,
-  } = generatorValues
-  const isClone = await checkCurrentTemplateVersion(macros, argv.t, tmpPath)
-  if (isClone) {
-    const spinnerDownload = generatorOraStart(macros.download)
-    clone(templateRepo, tmpPath).then(() => {
-      spinnerDownload.stop();
-      render(generatorValues, macros)
-    });
-  } else {
-    render(generatorValues, macros)
-  }
+  // TODO
+  render(generatorValues, macros)
 }
 
 const generatorOraStart = (oraContent: string) => {

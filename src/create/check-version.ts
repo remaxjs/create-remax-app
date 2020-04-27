@@ -13,7 +13,7 @@ export interface VersionValueType extends ObjectValueType {
 const getResult = (url: string) => {
   return axios.get(url).then(data => {
     return data.data
-  })
+  }).catch(e => {})
 }
 
 const checkRepoVersion = async (repoName: string) => {
@@ -45,8 +45,12 @@ const getLastVersion = async (repoName: string) => {
   // TODO：
   // 1. npm info 替换网络请求
   // 2. 添加版本缓存，24 小时
-  const res = await getResult(`https://registry.npmjs.org/${repoName}`);
-  const latestVersion = res['dist-tags'].latest;
+  let latestVersion = ''
+  try {
+    // 添加异常处理，如未联网，直接 return
+    const res = await getResult(`https://registry.npmjs.org/${repoName}`);
+    latestVersion = res['dist-tags'].latest;
+  } catch(e) {}
   return latestVersion
 }
 
@@ -89,6 +93,7 @@ const generatorPrompt = ({ latestVersion, localVersion, repoName }: VersionValue
 const checkCurrentRepoVersion = async (repoName: string) => {
   try {
     const latestVersion = await getLastVersion(repoName);
+    if (!latestVersion) return
     const localVersion = getLocalVersion();
     if (semver.lt(localVersion, latestVersion)) {
       generatorPrompt({

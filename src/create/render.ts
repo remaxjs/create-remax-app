@@ -21,7 +21,6 @@ export interface ArgvType extends Arguments {
 }
 
 export default async (renderObj: GeneratorValues, macros: MacrosType) => {
-  const remaxTagName = await checkRepoVersion(macros.remaxRepo);
   const {
     templatePath,
     destPath,
@@ -32,7 +31,6 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   .metadata({
     name: projectDirectory,
     description: description,
-    remaxVersion: `^${remaxTagName.replace(/^./, '')}`,
   })
   .source(templatePath)
   .destination(destPath)
@@ -42,16 +40,12 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
     author: { default: user(), type: 'string' },
     description: { default: description, type: 'string' },
     platform: {
-      default: 'wechat',
+      default: macros.defaultPlatform,
       type: 'list',
-      choices: [
-        'wechat',
-        'alipay',
-        'toutiao'
-      ]
+      choices: macros.choices
     }
   }))
-  .use(filterPlatform())
+  .use(filterPlatform(macros))
   .use(renderTemplateFiles())
   .build((err: Error) => {
     if (!err) {
@@ -60,10 +54,13 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   })
 }
 
-const filterPlatform = () => {
+const filterPlatform = (macros: MacrosType) => {
   return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
     metalsmith._metadata.platformTitle = firstUpperCase(platform)
+    macros.choices.forEach(item => {
+      metalsmith._metadata[item] = item === platform ? true : false
+    })
     done()
   }
 }
