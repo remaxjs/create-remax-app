@@ -1,36 +1,66 @@
-# Remax One Template
+# Remax {{ platformTitle }}
 
-使用 Remax 开发跨平台小程序的模板。
+{{#if one}}
+使用 Remax 开发跨平台小程序。
+{{/if}}
+{{#if wechat}}
+使用 Remax 开发微信小程序。
+{{/if}}
+{{#if toutiao}}
+使用 Remax 开发头条小程序。
+{{/if}}
+{{#if ali}}
+使用 Remax 开发阿里小程序。
+{{/if}}
 
-通过该模板创建一个新项目：
-
-```bash
-$ create-remax-app my-app
-$ cd my-app
-```
-
-## 开始开发
+## Getting Start
 
 安装依赖
 
 ```bash
-$ npm install
+npm install
 ```
 
-开始构建
+调试项目
 
 ```bash
-# 选定要开发的平台
+{{#if one}}
+# 选定要进行开发的平台，如 wechat，并调试
 $ npm run dev wechat
+or
+yarn dev wechat
+{{else}}
+# 执行调试命令
+$ npm run dev
+or
+yarn dev
+{{/if}}
 ```
 
-使用小程序开发者工具打开项目根目录。
+{{#if one}}
+使用小程序开发者工具打开项目下的 `dist/[target]` 目录。
+{{else}}
+使用小程序开发者工具打开项目下的 `dist` 目录
+{{/if}}
 
-## 发布
+## 构建
 
 ```bash
-# 选定要开发的平台
+{{#if one}}
+# 选定要构建的平台，如 wechat，并执行构建
 $ npm run build wechat
+or
+$ yarn build wechat
+{{else}}
+# 执行构建命令
+$ npm run build
+or
+$ yarn build
+{{/if}}
 ```
 
-使用小程序开发者工具上传版本。
+{{#if one}}
+使用小程序开发者工具打开项目下的 `dist/[target]` 目录，上传代码即可。
+{{else}}
+使用小程序开发者工具打开项目下的 `dist` 目录，上传代码即可。
+{{/if}}
