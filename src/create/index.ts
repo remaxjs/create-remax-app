@@ -7,10 +7,12 @@ import render, { ArgvType, pathAndRepoUrlGenerator } from './render';
 export { ArgvType }
 export default async (argv: ArgvType, macros: MacrosType) => {
   try {
-    await checkCurrentRepoVersion(macros.scriptName)
+    // 如果有 -c 则忽略版本检查
+    if (!argv.c) {
+      await checkCurrentRepoVersion(macros.scriptName)
+    }
   } catch(e) {}
   const generatorValues = pathAndRepoUrlGenerator(argv, macros);
-  // TODO
   render(generatorValues, macros)
 }
 

@@ -32,6 +32,12 @@ export function run(args: string[]) {
       describe: 'create remax typescript app',
       type: 'boolean'
     })
+    .option('c', {
+      alias: 'check',
+      default: false,
+      describe: 'ignore version check',
+      type: 'boolean'
+    })
     .fail((msg: string, err: Error) => {
       if (err) throw err
       console.error('Please specify the project directory:')
