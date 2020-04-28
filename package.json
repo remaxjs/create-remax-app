@@ -36,6 +36,7 @@
     "commander": "^3.0.1",
     "consolidate": "^0.15.1",
     "degit": "^2.1.4",
+    "fs-extra": "^9.0.0",
     "handlebars": "^4.4.3",
     "inquirer": "^7.0.0",
     "metalsmith": "^2.3.0",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/async": "^3.0.2",
+    "@types/fs-extra": "^8.1.0",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",

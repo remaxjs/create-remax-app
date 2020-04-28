@@ -4,6 +4,7 @@ import consolidate from 'consolidate';
 import async from 'async';
 import path from 'path';
 import { Arguments } from 'yargs';
+import fs from 'fs-extra';
 
 import { checkRepoVersion } from './check-version';
 import user from './git-user';
@@ -27,16 +28,24 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
     description,
     projectDirectory
   } = renderObj
+  // const isExt fs.ensureDirSync(destPath)
+  let newProjectDirectory = projectDirectory
+  let newDestPath = destPath
+  const isExists = fs.pathExistsSync(destPath)
+  if (isExists) {
+    console.log(chalk.red('此项目已存在，请变更名字后重试'))
+    return
+  }
   Metalsmith(process.cwd())
   .metadata({
-    name: projectDirectory,
+    name: newProjectDirectory,
     description: description,
   })
   .source(templatePath)
-  .destination(destPath)
+  .destination(newDestPath)
   .clean(false)
   .use(askQuestions({
-    name: { default: projectDirectory, type: 'string' },
+    name: { default: newProjectDirectory, type: 'string' },
     author: { default: user(), type: 'string' },
     description: { default: description, type: 'string' },
     platform: {
