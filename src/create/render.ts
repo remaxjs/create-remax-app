@@ -1,7 +1,7 @@
 import Metalsmith from 'metalsmith';
 import chalk from 'chalk';
 import consolidate from 'consolidate';
-import async, { any } from 'async';
+import async from 'async';
 import path from 'path';
 import { Arguments } from 'yargs';
 import fs from 'fs-extra';
