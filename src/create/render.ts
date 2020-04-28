@@ -68,8 +68,8 @@ const filterPlatform = (macros: MacrosType) => {
   return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
     metalsmith._metadata.platformTitle = firstUpperCase(platform)
-    macros.choices.forEach(item => {
-      metalsmith._metadata[item] = item === platform ? true : false
+    macros.choices.forEach((item: any) => {
+      metalsmith._metadata[item.value] = item.value === platform ? true : false
     })
     done()
   }

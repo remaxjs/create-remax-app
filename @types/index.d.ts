@@ -25,5 +25,5 @@ interface MacrosType {
   tmpPathName: string,
   templatePathName: string,
   defaultPlatform: string,
-  choices: string[]
+  choices: ObjectValueType[]
 }

@@ -11,10 +11,10 @@ const macros = {
   templatePathName: 'template',
   defaultPlatform: 'one',
   choices: [
-    'one',
-    'wechat',
-    'ali',
-    'toutiao'
+    { value: 'one', name: '跨平台小程序' },
+    { value: 'wechat', name: '微信小程序' },
+    { value: 'ali', name: '阿里（支付宝）小程序' },
+    { value: 'toutiao', name: '头条小程序' }
   ]
 }
 
