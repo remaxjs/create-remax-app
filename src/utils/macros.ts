@@ -7,9 +7,15 @@ const macros = {
   templateTSRepo: 'QC-L/remax-template-typescript',
   description: 'Remax Project',
   descriptionTS: 'Remax Project With TypeScript',
-  tmpPathName: 'tmp',
+  tmpPathName: 'temp',
   templatePathName: 'template',
-  defaultPlatform: 'wechat'
+  defaultPlatform: 'one',
+  choices: [
+    'one',
+    'wechat',
+    'ali',
+    'toutiao'
+  ]
 }
 
 export default macros;

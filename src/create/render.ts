@@ -4,6 +4,7 @@ import consolidate from 'consolidate';
 import async from 'async';
 import path from 'path';
 import { Arguments } from 'yargs';
+import fs from 'fs-extra';
 
 import { checkRepoVersion } from './check-version';
 import user from './git-user';
@@ -21,38 +22,41 @@ export interface ArgvType extends Arguments {
 }
 
 export default async (renderObj: GeneratorValues, macros: MacrosType) => {
-  const remaxTagName = await checkRepoVersion(macros.remaxRepo);
   const {
     templatePath,
     destPath,
     description,
     projectDirectory
   } = renderObj
+  // const isExt fs.ensureDirSync(destPath)
+  let newProjectDirectory = projectDirectory
+  let newDestPath = destPath
+  const isExists = fs.pathExistsSync(destPath)
+  if (isExists) {
+    console.log(chalk.red('此项目已存在，请变更名字后重试'))
+    return
+  }
   Metalsmith(process.cwd())
   .metadata({
-    name: projectDirectory,
+    name: newProjectDirectory,
     description: description,
-    remaxVersion: `^${remaxTagName.replace(/^./, '')}`,
   })
   .source(templatePath)
-  .destination(destPath)
+  .destination(newDestPath)
   .clean(false)
   .use(askQuestions({
-    name: { default: projectDirectory, type: 'string' },
+    name: { default: newProjectDirectory, type: 'string' },
     author: { default: user(), type: 'string' },
     description: { default: description, type: 'string' },
     platform: {
-      default: 'wechat',
+      default: macros.defaultPlatform,
       type: 'list',
-      choices: [
-        'wechat',
-        'alipay',
-        'toutiao'
-      ]
+      choices: macros.choices
     }
   }))
-  .use(filterPlatform())
+  .use(filterPlatform(macros))
   .use(renderTemplateFiles())
+  .use(removeFile())
   .build((err: Error) => {
     if (!err) {
       console.log(chalk.green('create project success!'))
@@ -60,10 +64,39 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   })
 }
 
-const filterPlatform = () => {
+const filterPlatform = (macros: MacrosType) => {
   return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
     metalsmith._metadata.platformTitle = firstUpperCase(platform)
+    macros.choices.forEach(item => {
+      metalsmith._metadata[item] = item === platform ? true : false
+    })
+    done()
+  }
+}
+
+const removeFile = () => {
+  return (files: any, metalsmith: any, done: () => void): void => {
+    const { platform } = metalsmith._metadata;
+    if (platform === 'wechat') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'mini.project.json') {
+          delete files[file]
+        }
+      })
+    } else if (platform === 'toutiao') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'mini.project.json' || file === 'project.config.json') {
+          delete files[file]
+        }
+      })
+    } else if (platform === 'ali') {
+      Object.keys(files).forEach(function (file) {
+        if (file === 'project.config.json') {
+          delete files[file]
+        }
+      })
+    }
     done()
   }
 }

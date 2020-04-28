@@ -24,5 +24,6 @@ interface MacrosType {
   descriptionTS: string,
   tmpPathName: string,
   templatePathName: string,
-  defaultPlatform: string
+  defaultPlatform: string,
+  choices: string[]
 }
