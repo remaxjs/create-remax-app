@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     {{#if one}}
-    "dev": "remax build -t -w",
+    "dev": "remax build -w -t",
     "build": "cross-env NODE_ENV=production remax build -t"
     {{else}}
     "dev": "remax build -t {{ platform }} -w",
