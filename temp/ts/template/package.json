@@ -1,0 +1,31 @@
+{
+  "name": "{{ name }}",
+  "private": true,
+  "version": "1.0.0",
+  "description": "{{ description }}",
+  "main": "index.js",
+  "keywords": [],
+  "author": "{{{ author }}}",
+  "license": "MIT",
+  "scripts": {
+    {{#if one}}
+    "dev": "remax build -w -t",
+    "build": "cross-env NODE_ENV=production remax build -t"
+    {{else}}
+    "dev": "remax build -t {{ platform }} -w",
+    "build": "cross-env NODE_ENV=production remax build -t {{ platform }}"
+    {{/if}}
+  },
+  "dependencies": {
+    "react": "^16.12.0",
+    {{#if one}}
+    "react-dom": "^16.12.0",
+    {{/if}}
+    "remax": "^2.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "@types/react": "^16.9.16",
+    "typescript": "^3.7.3"
+  }
+}

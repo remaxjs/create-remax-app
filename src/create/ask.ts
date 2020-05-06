@@ -9,7 +9,7 @@ const promptMapping: ObjectValueType = {
 
 export interface CustomQuestionType extends Question {
   label?: string,
-  choices?: string[],
+  choices?: ObjectValueType[] | string[],
   type: string,
 }
 
