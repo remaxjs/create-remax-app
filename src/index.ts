@@ -34,7 +34,7 @@ export function run(args: string[]) {
     })
     .option('c', {
       alias: 'check',
-      default: false,
+      default: true,
       describe: 'ignore version check',
       type: 'boolean'
     })

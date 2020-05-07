@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "dist/ali",
+  "miniprogramRoot": "dist/{{#if one}}ali{{/if}}",
   "scripts": {
     "beforeCompile": "npm run dev -- ali",
     "beforePreview": "npm run build -- ali",
