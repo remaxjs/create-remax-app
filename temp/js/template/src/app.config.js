@@ -1,7 +1,7 @@
 {{#if one}}
 const pages = ['pages/index/index'];
 
-exports.ali = {
+module.exports.ali = {
   pages,
   window: {
     defaultTitle: 'Remax Ali Template',
@@ -9,7 +9,7 @@ exports.ali = {
   },
 };
 
-exports.wechat = {
+module.exports.wechat = {
   pages,
   window: {
     navigationBarTitleText: 'Remax Wechat Template',
@@ -17,7 +17,7 @@ exports.wechat = {
   },
 };
 
-exports.toutiao = {
+module.exports.toutiao = {
   pages,
   window: {
     navigationBarTitleText: 'Remax Toutiao Template',
@@ -25,7 +25,7 @@ exports.toutiao = {
   },
 };
 
-export const web = {
+module.exports.web = {
   pages,
   title: 'Remax Web Template',
 };
