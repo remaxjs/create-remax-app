@@ -6,7 +6,7 @@ import path from 'path';
 import { Arguments } from 'yargs';
 import fs from 'fs-extra';
 
-import { checkRepoVersion } from './check-version';
+import { checkRepoVersion, generatorPrompt } from './check-version';
 import user from './git-user';
 import { firstUpperCase } from  '../utils/utils';
 import ask, { CustomQuestionObjectType } from './ask';
@@ -20,7 +20,8 @@ export interface ArgvType extends Arguments {
   t: boolean,
   projectDirectory: string,
 }
-
+let currentPlatformName = ''
+let currentPlatform = ''
 export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   const {
     templatePath,
@@ -57,11 +58,50 @@ export default async (renderObj: GeneratorValues, macros: MacrosType) => {
   .use(filterPlatform(macros))
   .use(renderTemplateFiles())
   .use(removeFile())
+  .use(generatorOutputInfo(macros))
   .build((err: Error) => {
     if (!err) {
-      console.log(chalk.green('create project success!'))
+      const cd = chalk.cyan(` cd ${newProjectDirectory} && npm i`)
+      const platformList = chalk.yellow('ali, wechat, toutiao, web')
+      const oneCommandArray = [
+        { command: chalk.cyan('npm run dev <platform>'), description: `根据传入平台进行调试，支持参数为: ${platformList}` },
+        { command: chalk.cyan('npm run dev ali'), description: '调试阿里小程序' },
+        { command: chalk.cyan('npm run build <platform>'), description: `根据传入平台构建小程序，支持参数为: ${platformList}` },
+        { command: chalk.cyan('npm run build ali'), description: '构建阿里小程序' },
+      ]
+      const otherCommandArray = [
+        { command: chalk.cyan('npm run dev'), description: `调试${currentPlatformName}` },
+        { command: chalk.cyan('npm run build'), description: `构建${currentPlatformName}` }
+      ]
+      const newCommandArray = oneCommandArray.map(item => {
+        return ` ${item.command} \t\n\t\n  ${item.description}`
+      })
+      const newOtherCommandArray = otherCommandArray.map(item => {
+        return ` ${item.command} \t\n\t\n  ${item.description}`
+      })
+      const oneCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(newProjectDirectory)} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newCommandArray.join('\t\n\t\n')}`
+      const otherCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(newProjectDirectory)} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newOtherCommandArray.join('\t\n\t\n')}`
+      const currentCommandInfo = currentPlatform === 'one' ? oneCommandInfo : otherCommandInfo
+      console.log('\t')
+      console.log(`创建 ${chalk.cyan(currentPlatformName)} 成功！`)
+      console.log(currentCommandInfo)
+      console.log('\t\n欲了解更多请查阅官方文档：https://remaxjs.org')
     }
   })
+}
+
+const generatorOutputInfo = (macros: MacrosType) => {
+  return (_: any, metalsmith: any, done: () => void): void => {
+    const { platform } = metalsmith._metadata;
+    macros.choices.some((item: any) => {
+      if (item.value === platform) {
+        currentPlatformName = item.name
+        currentPlatform = item.value
+        return
+      }
+    })
+    done()
+  }
 }
 
 const filterPlatform = (macros: MacrosType) => {
