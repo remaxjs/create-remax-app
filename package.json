@@ -1,6 +1,6 @@
 {
   "name": "create-remax-app",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Create Remax apps with no build configuration.",
   "bin": {
     "create-remax-app": "./bin/create-remax-app"
