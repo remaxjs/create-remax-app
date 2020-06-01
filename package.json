@@ -5,6 +5,9 @@
   "bin": {
     "create-remax-app": "./bin/create-remax-app"
   },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
