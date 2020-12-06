@@ -1,27 +1,27 @@
 {
-  "name": "{{ name }}",
+  "name": "<%= name %>",
   "private": true,
   "version": "1.0.0",
-  "description": "{{ description }}",
+  "description": "<%- description %>",
   "main": "index.js",
   "keywords": [],
-  "author": "{{{ author }}}",
+  "author": "<%- author %>",
   "license": "MIT",
   "scripts": {
-    {{#if one}}
+<% if (one) { -%>
     "dev": "remax build -w -t",
     "build": "cross-env NODE_ENV=production remax build -t"
-    {{else}}
-    "dev": "remax build -t {{ platform }} -w",
-    "build": "cross-env NODE_ENV=production remax build -t {{ platform }}"
-    {{/if}}
+<% } else { -%>
+    "dev": "remax build -t <%= platform %> -w",
+    "build": "cross-env NODE_ENV=production remax build -t <%= platform %>"
+<% } -%>
   },
   "dependencies": {
     "react": "^16.14.0",
-    {{#if one}}
+<% if (one) { -%>
     "react-dom": "^16.14.0",
-    {{/if}}
-    "remax": "^2.9.1"
+<% } -%>
+    "remax": "^2.10.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",

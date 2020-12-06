@@ -1,4 +1,4 @@
-{{#if one}}
+<% if (one) { %>
 const pages = ['pages/index/index'];
 
 module.exports.ali = {
@@ -29,12 +29,12 @@ module.exports.web = {
   pages,
   title: 'Remax Web Template',
 };
-{{else}}
+<% } else { %>
 module.exports = {
   pages: ['pages/index/index'],
   window: {
-    navigationBarTitleText: 'Remax {{ platformTitle }} Template',
+    navigationBarTitleText: 'Remax <%= platformTitle %> Template',
     navigationBarBackgroundColor: '#282c34'
   }
 };
-{{/if}}
+<% } %>

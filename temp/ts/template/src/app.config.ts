@@ -1,4 +1,4 @@
-{{#if one}}
+<% if (one) { -%>
 const pages = ['pages/index/index'];
 const color = '#282c34';
 
@@ -35,16 +35,16 @@ export const web: WebAppConfig = {
   pages,
   title: 'Remax One Web',
 };
-{{else}}
-import { AppConfig } from "remax/{{platform}}";
+<% } else { -%>
+import { AppConfig } from "remax/<%= platform %>";
 
 const config: AppConfig = {
   pages: ['pages/index/index'],
   window: {
-    navigationBarTitleText: 'Remax {{ platformTitle }} Template With TypeScript',
+    navigationBarTitleText: 'Remax <%= platformTitle %> Template With TypeScript',
     navigationBarBackgroundColor: '#282c34'
   }
 };
 
 export default config;
-{{/if}}
+<% } -%>

@@ -9,5 +9,6 @@
     "moduleResolution": "node",
     "outDir": "lib"
   },
-  "include": ["src/**/*", "@types/**/*"]
+  "include": ["src/**/*", "@types/**/*"],
+  "exclude": ["src/__tests__"]
 }

@@ -1,4 +1,4 @@
-import { getLocalVersion, generatorSymbol, checkCurrentRepoVersion } from '../create/check-version';
+import { getLocalVersion, generatorSymbol } from '../create/check-version';
 import pkgConfig from '../../package.json'
 
 describe('Check Version', () => {
@@ -13,9 +13,4 @@ describe('Check Version', () => {
     const symbol = generatorSymbol(4, '=');
     expect(symbol).toBe(targetSymbol)
   });
-
-  it('check current repo version error', async () => {
-    const isSame = await checkCurrentRepoVersion('create-remax-app')
-    expect(isSame).toBeDefined()
-  })
 })

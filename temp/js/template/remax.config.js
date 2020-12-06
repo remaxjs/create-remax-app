@@ -1,8 +1,6 @@
 module.exports = {
-  {{#if one}}
+<% if (one) { -%>
   one: true,
   output: 'dist/' + process.env.REMAX_PLATFORM
-  {{else}}
-  
-  {{/if}}
+<% } -%>
 };

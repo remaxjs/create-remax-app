@@ -1,60 +1,19 @@
-import axios from 'axios';
+import { execSync } from 'child_process'
 import semver from 'semver';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
 
-export interface VersionValueType extends ObjectValueType {
-  localVersion: string;
-  latestVersion: string;
-  repoName: string;
-}
-
-const getResult = (url: string) => {
-  return axios.get(url).then(data => {
-    return data.data
-  }).catch(e => {})
-}
-
-const checkRepoVersion = async (repoName: string) => {
-  const { tag_name } = await getResult(`https://api.github.com/repos/${repoName}/releases/latest`)
-  return tag_name
-}
-
-const checkCurrentTemplateVersion = async (macros: MacrosType, isTypeScript: boolean, tmpPath: string) => {
-  let repoName = isTypeScript ? macros.templateRepo : macros.templateTSRepo
-  const pkgPath = path.join(tmpPath, 'package.json')
-  
-  if (fs.existsSync(pkgPath)) {
-    const tmpPackageConfig = require(pkgPath)
-    const latestVersion = await checkRepoVersion(repoName)
-    return semver.lt(tmpPackageConfig.version, latestVersion)
-  } else {
-    return true
-  }
-}
-
-const getLocalVersion = (): string => {
+export function getLocalVersion(): string {
   const packagePath = require.resolve('../../package.json');
-  const packageConfig = require(packagePath)
-  const localVersion = packageConfig.version
-  return localVersion
+  return require(packagePath).version
 }
 
-const getLastVersion = async (repoName: string) => {
-  // TODO：
-  // 1. npm info 替换网络请求
-  // 2. 添加版本缓存，24 小时
-  let latestVersion = ''
-  try {
-    // 添加异常处理，如未联网，直接 return
-    const res = await getResult(`https://registry.npmjs.org/${repoName}`);
-    latestVersion = res['dist-tags'].latest;
-  } catch(e) {}
-  return latestVersion
+export function getLastVersion(repoName: string) {
+  return execSync(`npm view ${repoName} dist-tags.latest`).toString().trim()
 }
 
-const generatorSymbol = (count: number, symbol = '*') => {
+export const generatorSymbol = (count: number, symbol = '*') => {
   let starSymbol = '';
   for (let i = 0; i < count; i++) {
     starSymbol += symbol;
@@ -73,7 +32,14 @@ const generatorPlace = (origin: string, replace: string, longLength: number): st
   return originArray.join('')
 }
 
-const generatorPrompt = ({ latestVersion, localVersion, repoName }: VersionValueType) => {
+export function checkCurrentRepoVersion(repoName: string) {
+  const latestVersion = getLastVersion(repoName);
+  const localVersion = getLocalVersion();
+
+  if (!semver.lt(localVersion, latestVersion)) {
+    return
+  }
+
   const placeholder = `*${generatorSymbol(53, ' ')}*`
   const origin = `*${generatorSymbol(63, ' ')}*`
   const latest = 'latest:    ' + chalk.green(latestVersion)
@@ -88,35 +54,4 @@ const generatorPrompt = ({ latestVersion, localVersion, repoName }: VersionValue
   console.log(generatorPlace(origin, installed, longLength))
   console.log(placeholder)
   console.log(generatorSymbol(55))
-}
-
-const checkCurrentRepoVersion = async (repoName: string) => {
-  try {
-    const latestVersion = await getLastVersion(repoName);
-    if (!latestVersion) return
-    const localVersion = getLocalVersion();
-    if (semver.lt(localVersion, latestVersion)) {
-      generatorPrompt({
-        localVersion,
-        latestVersion,
-        repoName
-      });
-      return true
-    } else {
-      return false
-    }
-  } catch (err) {
-    // console.log(err)
-  }
-}
-
-export {
-  getResult,
-  getLocalVersion,
-  getLastVersion,
-  generatorSymbol,
-  generatorPrompt,
-  checkRepoVersion,
-  checkCurrentRepoVersion,
-  checkCurrentTemplateVersion
 }
