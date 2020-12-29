@@ -30,7 +30,7 @@
   "files": [
     "lib",
     "bin",
-    "temp"
+    "templates"
   ],
   "homepage": "https://github.com/remaxjs/create-remax-app#readme",
   "dependencies": {

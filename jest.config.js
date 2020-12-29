@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/temp/', '/node_modules/'],
+  testPathIgnorePatterns: ['/templates/', '/node_modules/'],
   testRegex: '.*\\.test\\.tsx?$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'node'],
   globals: {
