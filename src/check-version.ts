@@ -5,12 +5,15 @@ import path from 'path';
 import fs from 'fs';
 
 export function getLocalVersion(): string {
-  const packagePath = require.resolve('../../package.json');
+  const packagePath = require.resolve('../package.json');
   return require(packagePath).version
 }
 
+const TIMEOUT = 3000 // 3s
 export function getLastVersion(repoName: string) {
-  return execSync(`npm view ${repoName} dist-tags.latest`).toString().trim()
+  return execSync(`npm view ${repoName} dist-tags.latest`, { timeout: TIMEOUT })
+    .toString()
+    .trim()
 }
 
 export const generatorSymbol = (count: number, symbol = '*') => {

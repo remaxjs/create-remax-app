@@ -1,31 +1,27 @@
 import cli from 'yargs';
 import chalk from 'chalk';
-import create, { ArgvType } from './create';
-import macros from './utils/macros';
+import { checkCurrentRepoVersion } from './check-version'
+import render, { ArgvType } from './render';
+
+const scriptName = require('../package.json').name
+const placeholder = 'project-directory'
 
 export function run(args: string[]) {
-  const { scriptName, placeholder } = macros;
   cli
-    .scriptName(macros.scriptName)
+    .scriptName(scriptName)
     .usage<any>(
-      `$0 <${macros.placeholder}> [options]`, 
-      "创建 remax 项目", 
+      `$0 <${placeholder}> [options]`,
+      "创建 remax 项目",
       (yargs) => {
-        return yargs.positional(macros.placeholder, {
+        return yargs.positional(placeholder, {
           describe: '项目目录',
           type: 'string'
         })
-      }, 
-      (argv: ArgvType) => {
-        create(argv, macros)
-      }
+      },
+      create,
     )
-    .option('h', {
-      alias: 'help'
-    })
-    .option('v', {
-      alias: 'version'
-    })
+    .option('h', { alias: 'help' })
+    .option('v', { alias: 'version' })
     .option('t', {
       alias: 'typescript',
       default: false,
@@ -50,4 +46,14 @@ export function run(args: string[]) {
       process.exit(1)
     })
     .parse(args);
+}
+
+function create(argv: ArgvType) {
+  if (argv.check) {
+    try {
+      checkCurrentRepoVersion(scriptName)
+    } catch {}
+  }
+
+  render(argv)
 }

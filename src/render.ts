@@ -4,14 +4,10 @@ import chalk from 'chalk';
 import ejs from 'ejs';
 import async from 'async';
 import path from 'path';
-import { Arguments } from 'yargs';
-import prompts, {PromptObject} from 'prompts'
+import type { Arguments } from 'yargs';
+import prompts, { PromptObject } from 'prompts'
 import user from './git-user';
-import {MacrosType} from '../utils/macros'
-
-export interface GeneratorValues {
-  [key: string]: string
-}
+import * as Config from './config'
 
 export interface ArgvType extends Arguments {
   t: boolean,
@@ -21,13 +17,29 @@ export interface ArgvType extends Arguments {
 let currentPlatformName = ''
 let currentPlatform = ''
 
-export default async (info: GeneratorValues, macros: MacrosType) => {
-  if (fs.existsSync(info.destPath)) {
+function getConfig(isTS: boolean) {
+  if (isTS) {
+    return {
+      description: Config.descriptionTS,
+      templatePath: path.join(Config.templatesPath, 'ts', Config.templateDir),
+    }
+  }
+
+  return {
+    description: Config.description,
+    templatePath: path.join(Config.templatesPath, 'js', Config.templateDir),
+  }
+}
+
+export default async ({ projectDirectory, t }: ArgvType) => {
+  const { templatePath, description } = getConfig(t)
+  const destPath = path.join(process.cwd(), projectDirectory)
+
+  if (fs.existsSync(destPath)) {
     console.log(chalk.red('此项目已存在，请变更名字后重试'))
     return
   }
 
-  const { destPath, templatePath, description, projectDirectory } = info
   Metalsmith(process.cwd())
     .metadata({
       name: projectDirectory,
@@ -59,13 +71,13 @@ export default async (info: GeneratorValues, macros: MacrosType) => {
         name: 'platform',
         message: 'platform',
         type: 'select',
-        choices: macros.choices,
+        choices: Config.choices,
       },
     ]))
-    .use(filterPlatform(macros))
+    .use(filterPlatform())
     .use(renderTemplateFiles())
     .use(removeFile())
-    .use(generatorOutputInfo(macros))
+    .use(generatorOutputInfo())
     .build((err: Error) => {
       if (!err) {
         const cd = chalk.cyan(` cd ${projectDirectory} && npm i`)
@@ -97,10 +109,10 @@ export default async (info: GeneratorValues, macros: MacrosType) => {
     })
 }
 
-const generatorOutputInfo = (macros: MacrosType) => {
+const generatorOutputInfo = () => {
   return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
-    macros.choices.some((item: any) => {
+    Config.choices.some((item: any) => {
       if (item.value === platform) {
         currentPlatformName = item.title
         currentPlatform = item.value
@@ -111,11 +123,11 @@ const generatorOutputInfo = (macros: MacrosType) => {
   }
 }
 
-const filterPlatform = (macros: MacrosType) => {
+const filterPlatform = () => {
   return (_: any, metalsmith: any, done: () => void): void => {
     const { platform } = metalsmith._metadata;
     metalsmith._metadata.platformTitle = platform[0].toUpperCase() + platform.slice(1).toLowerCase()
-    macros.choices.forEach((item: any) => {
+    Config.choices.forEach((item: any) => {
       metalsmith._metadata[item.value] = item.value === platform ? true : false
     })
     done()
@@ -167,27 +179,5 @@ const renderTemplateFiles = () => {
 
       next()
     }, done)
-  }
-}
-
-
-export const pathAndRepoUrlGenerator = (argv: ArgvType, macros: MacrosType) => {
-  const { projectDirectory, t } = argv;
-  const destPath = path.join(process.cwd(), projectDirectory)
-  let tmpPath = path.join(__dirname, '../..', macros.tmpPathName)
-  let description = macros.description
-  if (t) {
-    description = macros.descriptionTS
-    tmpPath = path.join(tmpPath, 'ts')
-  } else {
-    tmpPath = path.join(tmpPath, 'js')
-  }
-  const templatePath = path.join(tmpPath, macros.templatePathName)
-  return {
-    templatePath,
-    tmpPath,
-    destPath,
-    description,
-    projectDirectory
   }
 }

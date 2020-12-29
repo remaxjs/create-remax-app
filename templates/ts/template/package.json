@@ -21,7 +21,7 @@
 <% if (one) { -%>
     "react-dom": "^16.14.0",
 <% } -%>
-    "remax": "^2.10.1"
+    "remax": "^2.11.2"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",

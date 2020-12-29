@@ -1,10 +1,11 @@
-import { getLocalVersion, generatorSymbol } from '../create/check-version';
-import pkgConfig from '../../package.json'
+import { getLocalVersion, generatorSymbol } from '../check-version';
+
+const { version } = require('../../package.json')
 
 describe('Check Version', () => {
-  it(`local version should be ${pkgConfig.version}`, () => {
+  it(`local version should be ${version}`, () => {
     const localVersion = getLocalVersion();
-    const local = pkgConfig.version;
+    const local = version;
     expect(localVersion).toBe(local);
   });
 
