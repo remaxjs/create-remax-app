@@ -10,8 +10,8 @@ import user from './git-user';
 import * as Config from './config'
 
 export interface ArgvType extends Arguments {
-  t: boolean,
-  projectDirectory: string,
+  t: boolean;
+  projectDirectory: string;
 }
 
 let currentPlatformName = ''
@@ -172,7 +172,6 @@ const renderTemplateFiles = () => {
         const res = ejs.render(str, metalsmithMetadata)
         files[file].contents = Buffer.from(res, 'utf-8')
       } catch (err) {
-        console.log({str, err})
         err.message = `[${file}] ${err.message}`
         return next(err)
       }

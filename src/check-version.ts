@@ -1,8 +1,6 @@
 import { execSync } from 'child_process'
 import semver from 'semver';
 import chalk from 'chalk';
-import path from 'path';
-import fs from 'fs';
 
 export function getLocalVersion(): string {
   const packagePath = require.resolve('../package.json');
