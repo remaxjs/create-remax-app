@@ -28,36 +28,29 @@
     "url": "https://github.com/remaxjs/create-remax-app/issues"
   },
   "files": [
-    "lib/**/*",
-    "bin/**/*",
-    "temp/**/*"
+    "lib",
+    "bin",
+    "templates"
   ],
   "homepage": "https://github.com/remaxjs/create-remax-app#readme",
   "dependencies": {
     "async": "^3.1.0",
-    "axios": "^0.19.0",
-    "chalk": "^2.4.2",
-    "commander": "^3.0.1",
-    "consolidate": "^0.15.1",
-    "degit": "^2.1.4",
-    "fs-extra": "^9.0.0",
-    "handlebars": "^4.4.3",
-    "inquirer": "^7.0.0",
+    "chalk": "^4.1.0",
+    "ejs": "3.0.2",
     "metalsmith": "^2.3.0",
-    "ora": "^4.0.2",
-    "semver": "^6.3.0",
-    "yargs": "^14.2.0"
+    "prompts": "^2.4.0",
+    "semver": "^7.3.4",
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@types/async": "^3.0.2",
-    "@types/fs-extra": "^8.1.0",
-    "@types/inquirer": "^6.5.0",
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.7.12",
-    "@types/yargs": "^13.0.3",
-    "execa": "^3.3.0",
-    "jest": "^24.9.0",
-    "ts-jest": "^24.1.0",
-    "typescript": "^3.6.3"
+    "@types/async": "^3.2.5",
+    "@types/ejs": "^3.0.5",
+    "@types/jest": "^26.0.16",
+    "@types/node": "^14.14.10",
+    "@types/prompts": "^2.0.9",
+    "@types/yargs": "^15.0.11",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.2"
   }
 }

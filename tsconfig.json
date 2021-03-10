@@ -2,12 +2,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
-    "target": "es5",
+    "lib": ["ES2019"],
+    "target": "ES2019",
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "outDir": "lib"
   },
-  "include": ["src/**/*", "@types/**/*"]
+  "include": ["src/**/*", "@types/**/*"],
+  "exclude": ["src/__tests__"]
 }
