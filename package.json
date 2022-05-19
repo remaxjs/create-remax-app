@@ -13,6 +13,14 @@
     "build": "tsc",
     "test": "jest"
   },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/remaxjs/create-remax-app.git"
@@ -50,8 +58,10 @@
     "@types/prompts": "^2.0.9",
     "@types/yargs": "^15.0.11",
     "jest": "^26.6.3",
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.0.5",
     "ts-jest": "^26.4.4",
     "typescript": "^4.1.2",
-    "prettier": "^2.0.5"
+    "yorkie": "^2.0.0"
   }
 }
