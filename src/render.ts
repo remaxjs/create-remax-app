@@ -48,32 +48,34 @@ export default async ({ projectDirectory, t }: ArgvType) => {
     .source(templatePath)
     .destination(destPath)
     .clean(false)
-    .use(ask([
-      {
-        name: 'name',
-        message: 'name',
-        initial: projectDirectory,
-        type: 'text',
-      },
-      {
-        name: 'author',
-        message: 'author',
-        initial: user(),
-        type: 'text',
-      },
-      {
-        name: 'description',
-        message: 'description',
-        initial: description,
-        type: 'text',
-      },
-      {
-        name: 'platform',
-        message: 'platform',
-        type: 'select',
-        choices: Config.choices,
-      },
-    ]))
+    .use(
+      ask([
+        {
+          name: 'name',
+          message: 'name',
+          initial: projectDirectory,
+          type: 'text',
+        },
+        {
+          name: 'author',
+          message: 'author',
+          initial: user(),
+          type: 'text',
+        },
+        {
+          name: 'description',
+          message: 'description',
+          initial: description,
+          type: 'text',
+        },
+        {
+          name: 'platform',
+          message: 'platform',
+          type: 'select',
+          choices: Config.choices,
+        },
+      ])
+    )
     .use(filterPlatform())
     .use(renderTemplateFiles())
     .use(removeFile())
@@ -83,7 +85,10 @@ export default async ({ projectDirectory, t }: ArgvType) => {
         const cd = chalk.cyan(` cd ${projectDirectory} && npm i`);
         const platformList = chalk.yellow('ali, wechat, toutiao, web');
         const oneCommandArray = [
-          { command: chalk.cyan('npm run dev <platform>'), description: `根据传入平台进行调试，支持参数为: ${platformList}` },
+          {
+            command: chalk.cyan('npm run dev <platform>'),
+            description: `根据传入平台进行调试，支持参数为: ${platformList}`,
+          },
           { command: chalk.cyan('npm run dev ali'), description: '调试阿里小程序' },
           {
             command: chalk.cyan('npm run build <platform>'),
@@ -101,8 +106,12 @@ export default async ({ projectDirectory, t }: ArgvType) => {
         const newOtherCommandArray = otherCommandArray.map(item => {
           return ` ${item.command} \t\n\t\n  ${item.description}`;
         });
-        const oneCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(projectDirectory)} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newCommandArray.join('\t\n\t\n')}`;
-        const otherCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(projectDirectory)} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newOtherCommandArray.join('\t\n\t\n')}`;
+        const oneCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(
+          projectDirectory
+        )} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newCommandArray.join('\t\n\t\n')}`;
+        const otherCommandInfo = `\t\n你可以进入 ${chalk.cyanBright(
+          projectDirectory
+        )} 执行以下命令: \t\n\t\n${cd}\t\n\t\n  进入项目目录并安装依赖\t\n\t\n${newOtherCommandArray.join('\t\n\t\n')}`;
         const currentCommandInfo = currentPlatform === 'one' ? oneCommandInfo : otherCommandInfo;
         console.log('\t');
         console.log(`创建 ${chalk.cyan(currentPlatformName)} 成功！`);
@@ -110,7 +119,7 @@ export default async ({ projectDirectory, t }: ArgvType) => {
         console.log('\t\n欲了解更多请查阅官方文档：https://remaxjs.org');
       }
     });
-}
+};
 
 const generatorOutputInfo = () => {
   return (_: any, metalsmith: any, done: () => void): void => {
@@ -141,6 +150,7 @@ const removeFile = () => {
   const filesToRemove: Record<string, string[]> = {
     'mini.project.json': ['wechat', 'toutiao'],
     'project.config.json': ['ali', 'toutiao'],
+    'project.tt.json': ['ali', 'wechat'],
   };
 
   return (files: Record<string, any>, metalsmith: any, done: () => void): void => {
@@ -168,17 +178,21 @@ const renderTemplateFiles = () => {
   return (files: any, metalsmith: any, done: () => void) => {
     const keys = Object.keys(files);
     const metalsmithMetadata = metalsmith.metadata();
-    async.each(keys, (file, next) => {
-      const str = files[file].contents.toString();
-      try {
-        const res = ejs.render(str, metalsmithMetadata);
-        files[file].contents = Buffer.from(res, 'utf-8');
-      } catch (err) {
-        err.message = `[${file}] ${err.message}`;
-        return next(err);
-      }
+    async.each(
+      keys,
+      (file, next) => {
+        const str = files[file].contents.toString();
+        try {
+          const res = ejs.render(str, metalsmithMetadata);
+          files[file].contents = Buffer.from(res, 'utf-8');
+        } catch (err) {
+          err.message = `[${file}] ${err.message}`;
+          return next(err);
+        }
 
-      next();
-    }, done);
+        next();
+      },
+      done
+    );
   };
 };

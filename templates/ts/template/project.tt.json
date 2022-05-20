@@ -7,7 +7,7 @@
     "newFeature": true
   },
   "appid": "testAppId",
-  "projectname": "<% =name %>",
+  "projectname": "<%= name %>",
   "condition": {
     "miniprogram": {
       "current": -1
