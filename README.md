@@ -20,3 +20,11 @@ yarn create remax-app first-remax-app
 cd first-remax-app && yarn
 yarn dev
 ```
+
+### 使用 pnpm
+
+```sh
+pnpm create remax-app first-remax-app
+cd first-remax-app && pnpm
+pnpm dev
+```
